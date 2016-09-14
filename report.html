@@ -285,7 +285,8 @@ div#notebook {
 <span class="n">n_students</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
 <span class="c1"># TODO: Calculate number of features</span>
-<span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="c1"># subtraindo 1 pois a última coluna é o target</span>
+<span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> 
 
 <span class="c1"># TODO: Calculate passing students</span>
 <span class="n">n_passed</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">student_data</span><span class="p">[</span><span class="n">student_data</span><span class="p">[</span><span class="s1">&#39;passed&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;yes&#39;</span><span class="p">])</span>
@@ -315,7 +316,7 @@ div#notebook {
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Total number of students: 395
-Number of features: 31
+Number of features: 30
 Number of students who passed: 265
 Number of students who failed: 130
 Graduation rate of the class: 67.09%
@@ -506,10 +507,10 @@ Feature values:
 <span class="c1"># Set the number of testing points</span>
 <span class="n">num_test</span> <span class="o">=</span> <span class="n">X_all</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">num_train</span>
 
-
 <span class="c1"># TODO: Shuffle and split the dataset into the number of training and testing points above</span>
+<span class="c1"># Usando estratificação para garantir mesma proporção de classes na base de treino e na de teste</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> \
-    <span class="n">train_test_split</span><span class="p">(</span><span class="n">X_all</span><span class="p">,</span> <span class="n">y_all</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">num_test</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="n">num_train</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">train_test_split</span><span class="p">(</span><span class="n">X_all</span><span class="p">,</span> <span class="n">y_all</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_all</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">num_test</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="n">num_train</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Show the results of the split</span>
 <span class="k">print</span> <span class="s2">&quot;Training set has {} samples.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -1084,7 +1085,7 @@ Testing set has 95 samples.
 </ul>
 <h3 id="SVM">SVM<a class="anchor-link" href="#SVM">&#182;</a></h3><ul>
 <li>aplicação: pode ser usado como filtro antispam: <a href="http://trec.nist.gov/pubs/trec15/papers/hit.spam.final.final.pdf">http://trec.nist.gov/pubs/trec15/papers/hit.spam.final.final.pdf</a>.</li>
-<li>prós: por tratar de otimização em um conjunto convexo (<a href="http://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/svm.pdf">http://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/svm.pdf</a>), SVM sempre encontra a solução ótima dados o conjunto de dados de treinamento e a parametrização, evitando mínimos locais. Além disso, como utiliza o conceito de maximização da margem entre classes juntamente com o fator de regularização $C$, há um maior controle sobre overfitting. Por último, utilizando o truque de kernel, consegue separar espaços não-lineares.</li>
+<li>prós: por tratar de otimização em um conjunto convexo (<a href="http://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/svm.pdf">http://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/svm.pdf</a>), SVM sempre encontra a solução ótima dados o conjunto de dados de treinamento e a parametrização, evitando mínimos locais. Além disso, como utiliza o conceito de maximização da margem entre classes juntamente com o fator de regularização $C$, há um maior controle sobre overfitting. Permite dar pesos diferentes para cada classe, de modo a aumentar a taxa de cobertura. Por último, utilizando o truque de kernel, consegue separar espaços não-lineares.</li>
 <li>contras: primeiramente, a otimização dos hiper-parâmetros é trabalhosa, pois depende da escolha do kernel, seus respectivos parâmetros e o fator de regularização. Em segundo lugar, trata-se de um algoritmo que não escala bem com um volume maior de dados.</li>
 <li>por que é um bom modelo para o problema?: basicamente, a quantidade de amostras e o número de atributos é pequeno, tornando o uso do algoritmo viável, desde que seja feita a normalização dos dados.</li>
 </ul>
@@ -1118,12 +1119,25 @@ Testing set has 95 samples.
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Importante">Importante<a class="anchor-link" href="#Importante">&#182;</a></h2><p>Como o objetivo do modelo é encontrar estudantes com maiores chances de não conseguirem se formar, substitui o <code>pos_label</code> no cálculo do F1 score para a classe '<code>no</code>'. Utilizar '<code>yes</code>' trouxe alguns problemas na otimização via <code>GridSearch</code>, conforme mostrado no final do relatório. Além disso, para ajudar nessa explicação, acrescentei também a geração da matriz de confusão para cada chamada ao método <code>predict_labels</code>.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">train_classifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">):</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">train_classifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Fits a classifier to the training data. &#39;&#39;&#39;</span>
     
     <span class="c1"># Start the clock, train the classifier, then stop the clock</span>
@@ -1135,6 +1149,20 @@ Testing set has 95 samples.
     <span class="k">print</span> <span class="s2">&quot;Trained model in {:.4f} seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
 
     
+<span class="k">def</span> <span class="nf">print_confusion_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s1">&#39;Confusion matrix:&#39;</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    
+    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">&#39; | </span><span class="si">%3s</span><span class="s1"> as </span><span class="si">%3s</span><span class="s1"> </span><span class="si">%4d</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">&#39; |</span><span class="se">\n</span><span class="s1">&#39;</span>
+    
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    
 <span class="k">def</span> <span class="nf">predict_labels</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Makes predictions using a fit classifier based on F1 score. &#39;&#39;&#39;</span>
     
@@ -1143,9 +1171,11 @@ Testing set has 95 samples.
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
     <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
     
+    <span class="n">print_confusion_matrix</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
     <span class="c1"># Print and return results</span>
     <span class="k">print</span> <span class="s2">&quot;Made predictions in {:.4f} seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;no&#39;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">train_predict</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">):</span>
@@ -1194,7 +1224,7 @@ Testing set has 95 samples.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># TODO: Import the three supervised learning models from sklearn</span>
@@ -1243,61 +1273,115 @@ Testing set has 95 samples.
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Training a GradientBoostingClassifier using a training set size of 100. . .
-Trained model in 0.0462 seconds
+Trained model in 0.0448 seconds
+Confusion matrix:
+ |  no as  no   34 |  no as yes    0 |
+ | yes as  no    0 | yes as yes   66 |
 Made predictions in 0.0004 seconds.
 F1 score for training set: 1.0000.
-Made predictions in 0.0004 seconds.
-F1 score for test set: 0.7761.
+Confusion matrix:
+ |  no as  no   15 |  no as yes   16 |
+ | yes as  no   18 | yes as yes   46 |
+Made predictions in 0.0003 seconds.
+F1 score for test set: 0.4687.
 Training a GradientBoostingClassifier using a training set size of 200. . .
-Trained model in 0.0569 seconds
+Trained model in 0.0570 seconds
+Confusion matrix:
+ |  no as  no   65 |  no as yes    0 |
+ | yes as  no    0 | yes as yes  135 |
 Made predictions in 0.0006 seconds.
-F1 score for training set: 0.9852.
+F1 score for training set: 1.0000.
+Confusion matrix:
+ |  no as  no   12 |  no as yes   19 |
+ | yes as  no   11 | yes as yes   53 |
 Made predictions in 0.0003 seconds.
-F1 score for test set: 0.7820.
+F1 score for test set: 0.4444.
 Training a GradientBoostingClassifier using a training set size of 300. . .
-Trained model in 0.0674 seconds
+Trained model in 0.0676 seconds
+Confusion matrix:
+ |  no as  no   87 |  no as yes   12 |
+ | yes as  no    0 | yes as yes  201 |
 Made predictions in 0.0007 seconds.
-F1 score for training set: 0.9740.
+F1 score for training set: 0.9355.
+Confusion matrix:
+ |  no as  no    9 |  no as yes   22 |
+ | yes as  no   10 | yes as yes   54 |
 Made predictions in 0.0003 seconds.
-F1 score for test set: 0.7727.
+F1 score for test set: 0.3600.
 
 Training a SVC using a training set size of 100. . .
-Trained model in 0.0013 seconds
-Made predictions in 0.0010 seconds.
-F1 score for training set: 0.9481.
+Trained model in 0.0014 seconds
+Confusion matrix:
+ |  no as  no   27 |  no as yes    7 |
+ | yes as  no    0 | yes as yes   66 |
 Made predictions in 0.0008 seconds.
-F1 score for test set: 0.7867.
+F1 score for training set: 0.8852.
+Confusion matrix:
+ |  no as  no    4 |  no as yes   27 |
+ | yes as  no    3 | yes as yes   61 |
+Made predictions in 0.0008 seconds.
+F1 score for test set: 0.2105.
 Training a SVC using a training set size of 200. . .
 Trained model in 0.0035 seconds
-Made predictions in 0.0025 seconds.
-F1 score for training set: 0.9204.
-Made predictions in 0.0013 seconds.
-F1 score for test set: 0.7785.
+Confusion matrix:
+ |  no as  no   36 |  no as yes   29 |
+ | yes as  no    0 | yes as yes  135 |
+Made predictions in 0.0024 seconds.
+F1 score for training set: 0.7129.
+Confusion matrix:
+ |  no as  no    5 |  no as yes   26 |
+ | yes as  no    3 | yes as yes   61 |
+Made predictions in 0.0012 seconds.
+F1 score for test set: 0.2564.
 Training a SVC using a training set size of 300. . .
-Trained model in 0.0069 seconds
-Made predictions in 0.0051 seconds.
-F1 score for training set: 0.9071.
+Trained model in 0.0070 seconds
+Confusion matrix:
+ |  no as  no   58 |  no as yes   41 |
+ | yes as  no    0 | yes as yes  201 |
+Made predictions in 0.0057 seconds.
+F1 score for training set: 0.7389.
+Confusion matrix:
+ |  no as  no    5 |  no as yes   26 |
+ | yes as  no    4 | yes as yes   60 |
 Made predictions in 0.0018 seconds.
-F1 score for test set: 0.7891.
+F1 score for test set: 0.2500.
 
 Training a KNeighborsClassifier using a training set size of 100. . .
-Trained model in 0.0007 seconds
+Trained model in 0.0006 seconds
+Confusion matrix:
+ |  no as  no   19 |  no as yes   15 |
+ | yes as  no    4 | yes as yes   62 |
 Made predictions in 0.0011 seconds.
-F1 score for training set: 0.8493.
+F1 score for training set: 0.6667.
+Confusion matrix:
+ |  no as  no   12 |  no as yes   19 |
+ | yes as  no   13 | yes as yes   51 |
 Made predictions in 0.0010 seconds.
-F1 score for test set: 0.7571.
+F1 score for test set: 0.4286.
 Training a KNeighborsClassifier using a training set size of 200. . .
 Trained model in 0.0007 seconds
-Made predictions in 0.0031 seconds.
-F1 score for training set: 0.8552.
+Confusion matrix:
+ |  no as  no   30 |  no as yes   35 |
+ | yes as  no   18 | yes as yes  117 |
+Made predictions in 0.0032 seconds.
+F1 score for training set: 0.5310.
+Confusion matrix:
+ |  no as  no    8 |  no as yes   23 |
+ | yes as  no   12 | yes as yes   52 |
 Made predictions in 0.0017 seconds.
-F1 score for test set: 0.7183.
+F1 score for test set: 0.3137.
 Training a KNeighborsClassifier using a training set size of 300. . .
-Trained model in 0.0009 seconds
-Made predictions in 0.0070 seconds.
-F1 score for training set: 0.8565.
-Made predictions in 0.0026 seconds.
-F1 score for test set: 0.7273.
+Trained model in 0.0010 seconds
+Confusion matrix:
+ |  no as  no   46 |  no as yes   53 |
+ | yes as  no   30 | yes as yes  171 |
+Made predictions in 0.0072 seconds.
+F1 score for training set: 0.5257.
+Confusion matrix:
+ |  no as  no    9 |  no as yes   22 |
+ | yes as  no    8 | yes as yes   56 |
+Made predictions in 0.0025 seconds.
+F1 score for test set: 0.3750.
 
 </pre>
 </div>
@@ -1335,24 +1419,24 @@ F1 score for test set: 0.7273.
 <tbody>
 <tr>
 <td style="text-align:center">100</td>
-<td style="text-align:center">0.0462</td>
-<td style="text-align:center">0.0004</td>
+<td style="text-align:center">0.0448</td>
+<td style="text-align:center">0.0003</td>
 <td style="text-align:center">1.0000</td>
-<td style="text-align:center">0.7761</td>
+<td style="text-align:center">0.4867</td>
 </tr>
 <tr>
 <td style="text-align:center">200</td>
-<td style="text-align:center">0.0569</td>
-<td style="text-align:center">0.0003</td>
-<td style="text-align:center">0.9852</td>
-<td style="text-align:center">0.7820</td>
+<td style="text-align:center">0.0570</td>
+<td style="text-align:center">0.0006</td>
+<td style="text-align:center">1.0000</td>
+<td style="text-align:center">0.4444</td>
 </tr>
 <tr>
 <td style="text-align:center">300</td>
-<td style="text-align:center">0.0674</td>
+<td style="text-align:center">0.0676</td>
 <td style="text-align:center">0.0003</td>
-<td style="text-align:center">0.9740</td>
-<td style="text-align:center">0.7727</td>
+<td style="text-align:center">0.9355</td>
+<td style="text-align:center">0.3600</td>
 </tr>
 </tbody>
 </table>
@@ -1369,24 +1453,24 @@ F1 score for test set: 0.7273.
 <tbody>
 <tr>
 <td style="text-align:center">100</td>
-<td style="text-align:center">0.0013</td>
+<td style="text-align:center">0.0014</td>
 <td style="text-align:center">0.0008</td>
-<td style="text-align:center">0.9481</td>
-<td style="text-align:center">0.7867</td>
+<td style="text-align:center">0.8852</td>
+<td style="text-align:center">0.2105</td>
 </tr>
 <tr>
 <td style="text-align:center">200</td>
 <td style="text-align:center">0.0035</td>
-<td style="text-align:center">0.0008</td>
-<td style="text-align:center">0.9204</td>
-<td style="text-align:center">0.7785</td>
+<td style="text-align:center">0.0012</td>
+<td style="text-align:center">0.7129</td>
+<td style="text-align:center">0.2564</td>
 </tr>
 <tr>
 <td style="text-align:center">300</td>
-<td style="text-align:center">0.0069</td>
+<td style="text-align:center">0.0070</td>
 <td style="text-align:center">0.0018</td>
-<td style="text-align:center">0.9071</td>
-<td style="text-align:center">0.7891</td>
+<td style="text-align:center">0.7389</td>
+<td style="text-align:center">0.2500</td>
 </tr>
 </tbody>
 </table>
@@ -1403,24 +1487,24 @@ F1 score for test set: 0.7273.
 <tbody>
 <tr>
 <td style="text-align:center">100</td>
-<td style="text-align:center">0.0007</td>
+<td style="text-align:center">0.0006</td>
 <td style="text-align:center">0.0010</td>
-<td style="text-align:center">0.8493</td>
-<td style="text-align:center">0.7571</td>
+<td style="text-align:center">0.6667</td>
+<td style="text-align:center">0.4286</td>
 </tr>
 <tr>
 <td style="text-align:center">200</td>
 <td style="text-align:center">0.0007</td>
 <td style="text-align:center">0.0017</td>
-<td style="text-align:center">0.8552</td>
-<td style="text-align:center">0.7183</td>
+<td style="text-align:center">0.5310</td>
+<td style="text-align:center">0.3137</td>
 </tr>
 <tr>
 <td style="text-align:center">300</td>
-<td style="text-align:center">0.0009</td>
-<td style="text-align:center">0.0026</td>
-<td style="text-align:center">0.8565</td>
-<td style="text-align:center">0.7273</td>
+<td style="text-align:center">0.0010</td>
+<td style="text-align:center">0.0025</td>
+<td style="text-align:center">0.5257</td>
+<td style="text-align:center">0.3750</td>
 </tr>
 </tbody>
 </table>
@@ -1462,16 +1546,15 @@ F1 score for test set: 0.7273.
 </ul>
 <p><strong><em>KNN</em></strong></p>
 <p>É o algoritmo de menor tempo de treinamento. No entanto, esse valor não é diretamente comparável pois trata-se basicamente de uma cópia dos dados de treinamento para um cache em memória; a lógica de inferência da classe está totalmente contida na busca dos vizinhos mais próximos do vetor de entrada e na maneira que os pesos de cada vizinho entram no cálculo do resultado final.</p>
-<p>O tempo para gerar a predição e o F1 score são os piores dentre os três modelos avaliados.</p>
+<p>Possui o melhor F1, mas pior tempo de classificação.</p>
 <p><strong><em>SVM</em></strong></p>
 <p>Tem o segundo tempo de treinamento, mas com um sério agravante: aparenta ter complexidade exponencial, pois o tempo aproximadamente dobra para cada incremento de 100 linhas no conjunto de entrada.</p>
-<p>É o segundo também no tempo de predição e o melhor em relação ao F1 score.</p>
+<p>É o segundo também no tempo de predição e o pior em relação ao F1 score.</p>
 <p><strong><em>Gradient Boosting</em></strong></p>
 <p>É o pior em termos de tempo de treinamento, mas a função que determina sua complexidade em cpu é, aparentemente, linear. Possui ainda o menor tempo de predição e segundo melhor F1 score.</p>
 <p><strong><em>Conclusão</em></strong></p>
-<p>O modelo escolhido é o Gradient Boosting, dado que possui F1 score pior que o do SVM, mas relativamente próximo. Além disso, como possui o menor tempo para gerar predições, é também o mais indicado tanto para processamento batch (se fosse feito uma análise para todos os estudantes de um dado país, por exemplo) quanto online (um site em que o estudante digitaria seus dados e seria informado se precisaria ou não de reforço).</p>
+<p>O modelo escolhido é o Gradient Boosting, pois embora tenha o F1 score um pouco abaixo do KNN, possui o menor tempo para gerar predições. Ou seja, uma vez treinado, é o mais rápido tanto para processamento batch (se fosse feito uma análise para todos os estudantes de um dado país, por exemplo) quanto online (um site em que o estudante digitaria seus dados e seria informado se precisaria ou não de reforço).</p>
 <p>Em um cenário em que a ordem de grandeza da base de treinamento fosse aumentada, SVM não seria viável por culpa de sua complexidade exponencial e KNN poderia ter problemas por limitações do tamanho do seu cache. No entanto, sendo (aparentemente) linear, o treinamento no modelo Gradient Boosting ainda seria viável.</p>
-<p>SVM seria o modelo escolhido se a escolha fosse definida unicamente pela qualidade de classificação observada, dado que tem uma menor diferença entre o F1 de treinamento e o de testes, implicando menor chance de overfitting.</p>
 
 </div>
 </div>
@@ -1492,7 +1575,10 @@ F1 score for test set: 0.7273.
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong></p>
-<p>O modelo escolhido (Gradient Boosting) irá gerar um conjunto de classificadores. No treinamento, ocorre algo parecido com o que fazemos quando estudamos: os casos difíceis serão observados com maior atenção do que os fáceis. Na predição, os casos fáceis terão um consenso próximo de 100% ao ser analisados pelo conjunto de classificadores, enquanto é esperado que, nos difíceis, haverá um subconjunto com tamanho &gt; 50% que foram treinados para entender a estrutura que torna o caso difícil ser o que é, garantindo uma votação que produza a resposta correta.</p>
+<p>Nota mental: honestamente, não acho possível reduzir o modelo de Gradient Boosting em uma explicação sem matemática. Procurei exemplos em vários lugares diferentes e, invariavelmente, caí em 1 de 3 cenários possíveis: 1. uma abstração tão simplificada que poderia ser aplicada a basicamente qualquer coisa; 2. uma explicação simples e coerente, exceto pelo problema de que o modelo era o AdaBoost, não GB; 3. um artigo baseado no capítulo de <em>boosting</em> do <em>The Elements of Statistical Learning</em> e tão indecifrável quanto.</p>
+<p>Primeiramente, precisamos entender o que é uma árvore de decisão. Ela é um conjunto de perguntas em sequência feitas sobre determinados atributos de uma dada entidade. Em seu treinamento, são efetuadas repetidas iterações de, dado um certo conjunto de entidades, encontrar qual pergunta que deve ser feita de maneira a tentar dividi-lo em 2 subconjuntos de tamanho o mais próximo possível, até o momento em que uma condição de parada é atingida (o tamanho do conjunto é menor do que um limite ou todos os elementos do conjunto pertencem a uma única classe). Durante a etapa de classificação, basta observar a pergunta no topo e, baseado na resposta, ir para a próxima pergunta. Esse processo é repetido até chegar em um ponto em que, ao invés de haver uma pergunta, encontraremos um nó que indica a classe resposta.</p>
+<p>A base do Gradient Boosting é gerar <em>N</em> classificadores em sequência (por padrão, são árvores de decisão). Para cada instante <em>t</em>, o resultado do modelo <em>t-1</em> é utilizado da seguinte maneira: compara-se o valor predito <em>y_pred</em> com o valor esperado <em>y</em> via uma função de erro. Essa função deve ser derivável para que possamos encontrar o seu gradiente. A árvore no instante <em>t</em> irá, então, usar como alvo esse gradiente e não mais o valor <em>y</em> para cada uma das entradas utilizadas no treino para <em>t</em>. Ao final, teremos uma árvore que representa a função que minimiza a função de erro original.</p>
+<p>O uso do gradiente da função de erro garante implicitamente que entradas difíceis de serem classificadas terão um fator de ajuste (baseado no gradiente) maior do que as entradas fáceis. Ao iterarmos várias vezes, aumentamos a chance de obtermos uma árvore que aprenda a classificar tanto os elementos fáceis quanto os difíceis.</p>
 
 </div>
 </div>
@@ -1521,9 +1607,40 @@ F1 score for test set: 0.7273.
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Importante">Importante<a class="anchor-link" href="#Importante">&#182;</a></h1><p>Ao trocar o <code>pos_label</code> para '<code>no</code>', houve casos em que a chamada para <code>f1_score</code> gerava um warning devido a uma divisão
+por zero. Isso acontecia pois certos modelos geravam apenas a classe '<code>yes</code>', zerando tanto a precisão quanto cobertura para a classe '<code>no</code>'. Criei o método <code>f1_score_no_warning</code>, que devolve 0 caso nenhuma das predições seja igual ao <code>pos_label</code> passado como parâmetro.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">f1_score_no_warning</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pos_label&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pos_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        
+    <span class="k">if</span> <span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pos_label&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
@@ -1543,14 +1660,13 @@ F1 score for test set: 0.7273.
 <span class="n">clf</span> <span class="o">=</span> <span class="n">GradientBoostingClassifier</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># TODO: Make an f1 scoring function using &#39;make_scorer&#39; </span>
-<span class="n">f1_scorer</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">f1_score</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+<span class="n">f1_scorer</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">f1_score_no_warning</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;no&#39;</span><span class="p">)</span>
 
 <span class="c1"># TODO: Perform grid search on the classifier using the f1_scorer as the scoring method</span>
 <span class="n">grid_obj</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">clf</span><span class="p">,</span>
                         <span class="n">param_grid</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
                         <span class="n">scoring</span><span class="o">=</span><span class="n">f1_scorer</span><span class="p">,</span>
-                        <span class="n">n_jobs</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-                        <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+                        <span class="n">n_jobs</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 
 <span class="c1"># TODO: Fit the grid search object to the training data and find the optimal parameters</span>
 <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
@@ -1576,11 +1692,17 @@ F1 score for test set: 0.7273.
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Grid search in in 78.9247 seconds.
+<pre>Grid search in in 77.4805 seconds.
+Confusion matrix:
+ |  no as  no   99 |  no as yes    0 |
+ | yes as  no    0 | yes as yes  201 |
+Made predictions in 0.0014 seconds.
+Tuned model has a training F1 score of 1.0000.
+Confusion matrix:
+ |  no as  no   11 |  no as yes   20 |
+ | yes as  no   13 | yes as yes   51 |
 Made predictions in 0.0005 seconds.
-Tuned model has a training F1 score of 0.8450.
-Made predictions in 0.0002 seconds.
-Tuned model has a testing F1 score of 0.7917.
+Tuned model has a testing F1 score of 0.4000.
 </pre>
 </div>
 </div>
@@ -1594,14 +1716,44 @@ Tuned model has a testing F1 score of 0.7917.
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Por curiosidade, resolvi ver o desempenho do SVM após otimizações do GridSearch. Ficou pior que Gradient Boosting.</p>
+<p>A execução do GridSearch sobre um SVC buscando aumentar o F1 score baseado na classe '<code>yes</code>' obteve um classificador que não devolveu '<code>no</code>' nos testes. Essa é a razão pela qual fiz as principais alterações no enunciado original:</p>
+<ul>
+<li>Utilizar <code>pos_label</code>='<code>no</code>'.</li>
+<li>Enfatizar o problema de usar pos_label='yes' ao mostrar a matriz de confusão juntamente com o score f1.</li>
+</ul>
+<p>Entendo que, se tivesse mantido <code>pos_label</code>='<code>yes</code>', o F1 score obtido seria melhor do que o encontrado no código acima, mas potencialmente enviesado para gerar classificações <code>yes</code>, causado pela distribuição das classes não ser balanceada. Os códigos abaixo evidenciam o problema:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">predict_labels</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Makes predictions using a fit classifier based on F1 score. &#39;&#39;&#39;</span>
+    
+    <span class="c1"># Start the clock, make predictions, then stop the clock</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+    
+    <span class="n">print_confusion_matrix</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+
+    <span class="c1"># Print and return results</span>
+    <span class="k">print</span> <span class="s2">&quot;Made predictions in {:.4f} seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
@@ -1664,11 +1816,17 @@ Tuned model has a testing F1 score of 0.7917.
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Grid search in in 32.4994 seconds.
+<pre>Grid search in in 38.3662 seconds.
+Confusion matrix:
+ |  no as  no    0 |  no as yes   99 |
+ | yes as  no    0 | yes as yes  201 |
 Made predictions in 0.0033 seconds.
-Tuned model has a training F1 score of 0.8282.
-Made predictions in 0.0011 seconds.
-Tuned model has a testing F1 score of 0.7891.
+Tuned model has a training F1 score of 0.8024.
+Confusion matrix:
+ |  no as  no    0 |  no as yes   31 |
+ | yes as  no    0 | yes as yes   64 |
+Made predictions in 0.0013 seconds.
+Tuned model has a testing F1 score of 0.8050.
 </pre>
 </div>
 </div>
@@ -1693,13 +1851,13 @@ Tuned model has a testing F1 score of 0.7891.
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer: </strong></p>
-<p>Antes do GridSearch
-F1 de treino: 0.9740
-F1 de teste: 0.7727</p>
-<p>Após GridSearch
-F1 de treino: 0.8450
-F1 de teste: 0.7917</p>
-<p>Houve uma melhora do F1 de teste e, ao mesmo tempo, uma diminuição do F1 de treino. Isso implica em um modelo que é capaz de gerar classificações corretas em maior proporção e com menor overfitting.</p>
+<p>Antes do <code>GridSearch</code>
+F1 de treino: 0.9355
+F1 de teste: 0.3600</p>
+<p>Após <code>GridSearch</code>
+F1 de treino: 1.0000
+F1 de teste: 0.4000</p>
+<p>Houve uma melhora do F1 de teste e de treino. No entanto, a grande diferença entre os F1 scores de treino e teste, tanto antes quanto depois do <code>GridSearch</code> sugere que o classificador sofre de <em>overfitting</em>.</p>
 
 </div>
 </div>
